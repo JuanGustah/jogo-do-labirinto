@@ -116,6 +116,7 @@
 
             const finishPosition = { x: 8, y: 1 }; // posição final do labirinto
             
+            //estado 
             const estado = {
                 player: startPosition,
                 saida: finishPosition,
@@ -274,16 +275,18 @@
         //colocar na classe depois
         const conjunto_acoes = [1, 2, 3, 4]
 
-        function agente_de_resolucao_problema_simples(params) {
+        //mazeMap é a percepcao
+        //pensar no atualizar o estado, mexer no ambiente e posteriormente setar um novo estado na nova chamada
+        function agente_de_resolucao_problema_simples(percepcao, estado) {
             //1 - up 2- down 3- left 4-right
             
             const seq_acoes = [];
             const acao = null;
-            const estado_atual = params.estado;
+            const estado_atual = estado;
             const objetivo = null;
-            const problema = null; //????
+            const problema = null; 
             
-            estado_atual = atualizar_estado(estado_atual, params.mazeMap); //essa funcao é a resultado
+            estado_atual = atualizar_estado(estado_atual, percepcao); 
 
             if(seq_acoes.length === 0){
                 objetivo = formular_objetivo(estado_atual);
@@ -295,8 +298,8 @@
                     return null;
                 }
 
-                acao = primeira_acao();
-                seq_acoes = retirar_primeira_acao();
+                acao = primeira_acao(seq_acoes);
+                seq_acoes = retirar_primeira_acao(acao, seq_acoes);
             }
 
             return acao;
@@ -304,19 +307,24 @@
 
         function atualizar_estado(estado, percepcao) {
             if (estado.player === estado.saida) {
-                return estado.status = 'Vitoria';
+                estado.status = 'Vitoria';
+                return estado
             }
-            return estado.status = 'Jogando';
+            estado.status = 'Jogando';
+            return { estado, percepcao };
         }
         
-        function formular_objetivo(params) {
-            return { x: params.finishPosition.x, y: params.finishPosition.y }
+        function formular_objetivo(estado) {
+            return { x: estado.saida.x, y: estado.saida.y }
         }
 
         //para formular devo pegar o conjunto de acoes, acoes(s), testar e retornar o novo estado resultado(s, a). onde s = estado, a = percepcao
-        function formular_problema(params) {
-            const conjunto_acoes = [1, 2, 3, 4]
-            const estadoAtual = estado_atual
+        function formular_problema(estado_atual, objetivo) {
+            //verificar as posicoes -1 do estado atual
+            //estado_atual.percepcao[player+1][] | enfim testar os visinhos
+            const conjunto_acoes = [1, 2, 3, 4] //definir o conjunto de acoes no livro acoes(s) 
+
+            const estadoAtual = estado_atual.estado //aqui por definição tambem tem a posicao atual do player
             const testeOBJ = function (estado) {
                 return estado.x === objetivo.x && estado.y === objetivo.y;
             } 
@@ -325,25 +333,41 @@
 
                 switch (acao) {
                     case 1:
-                        
+                        result -=  1;
                         break;
                     case 2:
-                        
+                        result += 1;
                         break;
                     case 3:
-                        
+                        result -= 1;
                         break;
                     case 4:
-                        
+                        result += 1;
                         break;
                     default:
                         break;
                 }
+                return result;
             }
-
+            return {
+                conjunto_acoes: conjunto_acoes, 
+                estadoAtual: estadoAtual, 
+                testeOBJ: testeOBJ, 
+                resultado_acao: resultado_acao
+            }
         }
-
+        
         function busca(params) {
+            const nos_visitados = new Set(); 
+            const root = params.estadoAtual;
+            const edge = [{ estado: params.estadoAtual }]
+
+
+            while (edge.length > 0) {
+                let no_atual = edge.pop();
+
+                params.testeOBJ(no_atual.estadoAtual)
+            }
             
         }
 
@@ -354,6 +378,12 @@
         function retirar_primeira_acao(params) {
             
         }
+
+        //chamar o agente a cada 1s
+        setTimeout(() => {
+            let acao_do_agente = agente_de_resolucao_problema_simples()
+        }, 1000);
+
     </script>
 </body>
 </html>
