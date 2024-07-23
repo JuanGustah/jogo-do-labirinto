@@ -95,6 +95,8 @@
             const mazeHeight = 10; // altura do labirinto em células
 
             const maze = document.getElementById('maze');
+            
+            
 
             // Definição do labirinto (exemplo simples)
             const mazeMap = [
@@ -113,23 +115,29 @@
             const startPosition = {x: 1, y: 1}; // posição inicial do labirinto
 
             const finishPosition = { x: 8, y: 1 }; // posição final do labirinto
+            
+            const estado = {
+                player: startPosition,
+                saida: finishPosition,
+                status: ''
+            }
 
             let playerPosition = { x: 1, y: 1 }; // posição inicial do jogador
             const player = document.createElement('div');
             player.className = 'player';
-            movePlayer();
+            movePlayer(1, 1);
 
-            let enemyPosition = { x: -1000, y: 12 }; // posição inicial do inimigo
-            const enemy = document.createElement('div');
-            enemy.className = 'enemy';
-            moveEnemy();
+            //let enemyPosition = { x: -1000, y: 12 }; // posição inicial do inimigo
+            //const enemy = document.createElement('div');
+            //enemy.className = 'enemy';
+            //moveEnemy();
 
-            let lastEnemyPosition = { x: enemyPosition.x, y: enemyPosition.y };
+            //let lastEnemyPosition = { x: enemyPosition.x, y: enemyPosition.y };
 
             let isPaused = false; // estado de pausa do jogo
 
             maze.appendChild(player);
-            maze.appendChild(enemy);
+            //maze.appendChild(enemy);
 
             // Criação do labirinto visualmente
             for (let y = 0; y < mazeHeight; y++) {
@@ -149,17 +157,19 @@
                 }
             }
 
-            function movePlayer() {
+            function movePlayer(newY, newX) {
                 player.style.left = playerPosition.x * 40 + 'px';
                 player.style.top = playerPosition.y * 40 + 'px';
+                mazeMap[newY][newX] = 2;
+                //console.log(mazeMap)
             }
 
-            function moveEnemy() {
+            /*function moveEnemy() {
                 enemy.style.left = enemyPosition.x * 40 + 'px';
                 enemy.style.top = enemyPosition.y * 40 + 'px';
-            }
+            }*/
 
-            function moveEnemyTowardsPlayer() {
+            /*function moveEnemyTowardsPlayer() {
                 if (isPaused) return; // não move o inimigo se o jogo estiver pausado
 
                 const directions = [
@@ -197,9 +207,11 @@
                     alert('Game Over! O inimigo te pegou.');
                     window.location.href = 'game-over.html';
                 }
-            }
+            }*/
 
             document.addEventListener('keydown', function(event) {
+                //agente_de_resolucao_problema_simples(estado);
+                
                 const key = event.key;
 
                 if (key === 'Escape' || key === 'escape') {
@@ -212,6 +224,8 @@
 
                 let newX = playerPosition.x;
                 let newY = playerPosition.y;
+                //retira do local anterior
+                mazeMap[newY][newX] = 0;
 
                 if (key === 'ArrowUp') {
                     newY--;
@@ -227,7 +241,7 @@
                 if (mazeMap[newY][newX] === 0) {
                     playerPosition.x = newX;
                     playerPosition.y = newY;
-                    movePlayer();
+                    movePlayer(newY, newX);
                 }
 
                 // Verifica se o jogador chegou ao final
@@ -237,11 +251,11 @@
                         // Aqui você pode redirecionar para a próxima fase
                         window.location.href = 'labirinto-fase-2.html'; // Substitua pelo nome do próximo arquivo HTML
                     }, 100);
-                }
+                }        
             });
 
             // Move o inimigo a cada 250ms
-            setInterval(moveEnemyTowardsPlayer, 1);
+            //setInterval(moveEnemyTowardsPlayer, 1);
 
             // Temporizador
             const timerElement = document.getElementById('timer');
@@ -257,6 +271,89 @@
 
             setInterval(updateTimer, 1000); // Atualiza o temporizador a cada segundo
         });
+        //colocar na classe depois
+        const conjunto_acoes = [1, 2, 3, 4]
+
+        function agente_de_resolucao_problema_simples(params) {
+            //1 - up 2- down 3- left 4-right
+            
+            const seq_acoes = [];
+            const acao = null;
+            const estado_atual = params.estado;
+            const objetivo = null;
+            const problema = null; //????
+            
+            estado_atual = atualizar_estado(estado_atual, params.mazeMap); //essa funcao é a resultado
+
+            if(seq_acoes.length === 0){
+                objetivo = formular_objetivo(estado_atual);
+                problema = formular_problema(estado_atual, objetivo);
+
+                seq_acoes = busca(problema);
+
+                if (!seq_acoes) {
+                    return null;
+                }
+
+                acao = primeira_acao();
+                seq_acoes = retirar_primeira_acao();
+            }
+
+            return acao;
+        }
+
+        function atualizar_estado(estado, percepcao) {
+            if (estado.player === estado.saida) {
+                return estado.status = 'Vitoria';
+            }
+            return estado.status = 'Jogando';
+        }
+        
+        function formular_objetivo(params) {
+            return { x: params.finishPosition.x, y: params.finishPosition.y }
+        }
+
+        //para formular devo pegar o conjunto de acoes, acoes(s), testar e retornar o novo estado resultado(s, a). onde s = estado, a = percepcao
+        function formular_problema(params) {
+            const conjunto_acoes = [1, 2, 3, 4]
+            const estadoAtual = estado_atual
+            const testeOBJ = function (estado) {
+                return estado.x === objetivo.x && estado.y === objetivo.y;
+            } 
+            const resultado_acao = function(estado, acao){
+                let result = {x: estado.x, y: estado.y};
+
+                switch (acao) {
+                    case 1:
+                        
+                        break;
+                    case 2:
+                        
+                        break;
+                    case 3:
+                        
+                        break;
+                    case 4:
+                        
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        }
+
+        function busca(params) {
+            
+        }
+
+        function primeira_acao(params) {
+            
+        }
+
+        function retirar_primeira_acao(params) {
+            
+        }
     </script>
 </body>
 </html>
