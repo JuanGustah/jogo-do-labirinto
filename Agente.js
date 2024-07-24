@@ -1,4 +1,3 @@
-
 export class Agente {
   seq_acoes;
   acao;
