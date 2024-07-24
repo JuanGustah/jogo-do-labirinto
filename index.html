@@ -1,70 +1,26 @@
-<! -- Feito por: João Pedro Vicenzi da Rocha e Pedro Heimann Ferro -->
-
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O Labirinto - Tela Inicial</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
-        
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(to bottom, #2aa6ed, #ffffff);
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            animation: fadeIn 2s ease-in;
-        }
-        p {
-            font-size: 1.2em;
-            margin-bottom: 40px;
-        }
-        .button {
-            display: inline-block;
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 30px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 1.2em;
-            margin-top: 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        .button + .button {
-            margin-top: 10px; /* Espaçamento entre os botões */
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./fase1.css" />
+    <script defer src="./src/main.js" type="module"></script>
+    <title>O Labirinto - Primeira Fase</title>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Bem-vindo ao Laberinto</h1>
-        <p> Feito por Pedro & João Pedro </p>
-        <a href="labirinto-fase-1.html" class="button">Iniciar Jogo</a>
-        <a href="descricao-labirinto.html" class="button">Tutorial</a>
-        <a href="modo-infinito.html" class="button">Modo Infinito</a>
+    <div id="maze-container">
+        <div id="maze"></div>
     </div>
+    <div id="timer">00:00</div>
 </body>
+
 </html>
