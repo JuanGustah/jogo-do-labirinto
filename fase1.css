@@ -23,8 +23,8 @@ body {
 #maze {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(10, 40px);
-  grid-template-rows: repeat(10, 40px);
+  grid-template-columns: repeat(20, 40px);
+  grid-template-rows: repeat(20, 40px);
   gap: 0;
   border: 2px solid #333;
   background-color: #ccc;

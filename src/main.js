@@ -12,27 +12,37 @@ function updateTimer() {
     .padStart(2, "0")}`;
 }
 
-const mazeWidth = 10; // largura do labirinto em células
-const mazeHeight = 10; // altura do labirinto em células
+const mazeWidth = 20; // largura do labirinto em células
+const mazeHeight = 20; // altura do labirinto em células
 
 const maze = document.getElementById("maze");
 
 const mazeMap = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 1, 0, 0, 1, 1, 0, 1],
-  [1, 1, 0, 1, 1, 0, 1, 0, 0, 1],
-  [1, 1, 0, 0, 0, 0, 1, 0, 1, 1],
-  [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
-  [1, 0, 0, 0, 0, 1, 0, 0, 1, 1],
-  [1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
-  [1, 0, 1, 0, 0, 0, 1, 0, 1, 1],
-  [1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
+    [1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1],
+    [1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1],
+    [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
+    [1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
+    [1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1],
+    [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1],
+    [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1],
+    [1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1],
+    [1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
 const startPosition = { x: 1, y: 1 }; // posição inicial do labirinto
 
-const finishPosition = { x: 8, y: 1 }; // posição final do labirinto
+const finishPosition = { x: 12, y: 16 }; // posição final do labirinto
 
 let playerPosition = { x: 1, y: 1 }; // posição inicial do jogador
 const player = document.createElement("div");
@@ -79,7 +89,7 @@ const timerElement = document.getElementById("timer");
 let startTime = Date.now();
 
 setInterval(updateTimer, 1000); // Atualiza o temporizador a cada segundo
-
+//console.log(mazeMap);
 for (let y = 0; y < mazeHeight; y++) {
   for (let x = 0; x < mazeWidth; x++) {
     const cell = document.createElement("div");
