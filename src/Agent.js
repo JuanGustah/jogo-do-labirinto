@@ -1,53 +1,7 @@
-class No {
-  constructor(estado, pai, acao, custo) {
-    this.estado = estado;
-    this.pai = pai;
-    this.acao = acao;
-    this.custo = custo;
-  }
-}
-
-class Coordinates {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-}
-class State {
-  constructor(playerPos, enviroment) {
-    this.playerPos = playerPos;
-    this.enviroment = enviroment;
-  }
-}
-
-class Environment {
-  constructor() {
-    this.mazeMap = [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1],
-      [1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1],
-      [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-      [1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-      [1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1],
-      [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1],
-      [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1],
-      [1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1],
-      [1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1],
-      [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  ];
-    this.startPos = { x: 1, y: 1 };
-    this.endPos = { x: 12, y: 16 };
-  }
-}
+import { Environment } from './Environment.js';
+import { State } from './State.js';
+import { No } from './No.js';
+import { Player } from './Player.js';
 
 class Agent {
   constructor(initialState) {
@@ -86,7 +40,8 @@ class Agent {
   }
 
   formulateGoal(state) {
-    return new Coordinates(
+    
+    return new Player(
       state.enviroment.endPos.x,
       state.enviroment.endPos.y
     );
@@ -97,10 +52,12 @@ class Agent {
       return ["l", "u", "r", "d"];
     };
 
+    //teste se
     let testGoal = function (state) {
       return state.playerPos.x === goal.x && state.playerPos.y === goal.y;
     };
 
+    //possibilidades de movimentação
     const transitionModel = function (node, action) {
       let coordinates = node.estado.playerPos;
       let maze = node.estado.enviroment;
@@ -114,7 +71,7 @@ class Agent {
             return node.estado;
           }
           return new State(
-            new Coordinates(coordinates.x, coordinates.y - 1),
+            new Player(coordinates.x, coordinates.y - 1),
             maze
           );
         case "r":
@@ -125,7 +82,7 @@ class Agent {
             return node.estado;
           }
           return new State(
-            new Coordinates(coordinates.x + 1, coordinates.y),
+            new Player(coordinates.x + 1, coordinates.y),
             maze
           );
         case "d":
@@ -136,7 +93,7 @@ class Agent {
             return node.estado;
           }
           return new State(
-            new Coordinates(coordinates.x, coordinates.y + 1),
+            new Player(coordinates.x, coordinates.y + 1),
             maze
           );
         case "l":
@@ -147,7 +104,7 @@ class Agent {
             return node.estado;
           }
           return new State(
-            new Coordinates(coordinates.x - 1, coordinates.y),
+            new Player(coordinates.x - 1, coordinates.y),
             maze
           );
         default:
@@ -209,12 +166,13 @@ class Agent {
 
 const environment = new Environment();
 const state = new State(
-  new Coordinates(environment.startPos.x, environment.startPos.y),
+  new Player(environment.startPos.x, environment.startPos.y),
   environment
 );
 const agent = new Agent(state);
-const playerPos = new Coordinates(1, 1);
+const playerPos = new Player(1, 1);
 
+//atuador
 function handleAction(action) {
   let event;
   switch (action) {
@@ -270,30 +228,10 @@ function handleAction(action) {
   }
 }
 
+//sensor
 let solution = setInterval(() => {
   let action = agent.simpleProblemSolvingAgent({
-    maze: [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1],
-      [1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1],
-      [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-      [1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-      [1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1],
-      [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1],
-      [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1],
-      [1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1],
-      [1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1],
-      [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  ],
+    maze: environment.mazeMap,
     playerPos,
   });
 
