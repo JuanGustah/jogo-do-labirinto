@@ -12,7 +12,6 @@ class Timer {
     minutes;
     seconds;
 
-
     constructor() {
         this.timerElement = document.getElementById('timer');
         this.startTime = Date.now();
@@ -26,10 +25,6 @@ class Timer {
     }
 }
 
-var time = new Timer();
-setTimeout(() => {
-    time.updateTimer()
-}, 1000);
 class Player {
     playerPosition;
     startPosition;
@@ -77,6 +72,14 @@ class Ambiente {
         this.mazeMap[newY][newX] = 2;
     }
 }
+
+class No{
+    constructor(estado, pai){
+        this.estado = estado;
+        this.pai = pai;
+        this.custo = 1;
+    }
+}
 class Agente {
     seq_acoes;
     acao;
@@ -113,7 +116,7 @@ class Agente {
             this.seq_acoes = this.retirar_primeira_acao(this.acao, this.seq_acoes);
         }
 
-        return acao;
+        return this.acao;
 
     }
 
@@ -147,16 +150,16 @@ class Agente {
 
             switch (acao) {
                 case 1:
-                    result -= 1;
+                    result.y -= 1;
                     break;
                 case 2:
-                    result += 1;
+                    result.y += 1;
                     break;
                 case 3:
-                    result -= 1;
+                    result.x -= 1;
                     break;
                 case 4:
-                    result += 1;
+                    result.x += 1;
                     break;
                 default:
                     break;
@@ -171,17 +174,33 @@ class Agente {
         }
     }
 
-    busca(params) {
+    busca(problema) {
+        const no = new No(problema.estadoAtual, null);
+
+        if(this.testeOBJ(no.estado)){
+            //return a solucao 
+        } 
+
+        const edge = { estado: problema.estadoAtual }
         const nos_visitados = new Set();
-        const root = params.estadoAtual;
-        const edge = [{ estado: params.estadoAtual }]
-
-
+         //sera sempre a posicao do player
+        //pegar ramificações para onde posso ir
+        
+        console.log(edge.estado);
+        //console.log(edge.estado);
         while (edge.length > 0) {
+            if(edge.length === 0){
+                return -1
+            }
             let no_atual = edge.pop();
+            nos_visitados.add(no_atual.estado);
+
             
+
             //params.testeOBJ(no_atual.estadoAtual)
         }
+        //retorna falha
+        return -1
 
     }
 
@@ -198,15 +217,13 @@ const ambiente = new Ambiente();
 const player = new Player();
 const estado = new Estado(player.startPosition, player.finishPosition, '');
 ambiente.movePlayer(player.playerPosition, 1, 1);
-new Timer();
+
+const timer = new Timer();
+setInterval(() => timer.updateTimer(), 1000);
+
 var agente = new Agente(estado);
+agente.agente_de_resolucao_problema_simples(ambiente)
 //chamar o agente a cada 0.5s
-setTimeout(() => {
-    let acao_do_agente = agente.agente_de_resolucao_problema_simples(ambiente)
-}, 500);
-
-
-
 
 // Criação do labirinto visualmente
 for (let y = 0; y < ambiente.mazeHeight; y++) {
