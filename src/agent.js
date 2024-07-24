@@ -45,6 +45,8 @@ class Agent {
     this.currentState = initialState;
     this.goal = null;
     this.problem = null;
+    this.HOPELESS = -1;
+    this.TERMINATED = -2;
   }
   simpleProblemSolvingAgent(percept) {
     this.currentState = this.updateState(this.currentState, percept);
@@ -55,22 +57,17 @@ class Agent {
       this.actionSeq = this.breadthFirstSearch(this.problem);
 
       if (!this.actionSeq) {
-        return null;
+        return this.HOPELESS;
       }
     }
     let action = this.actionSeq.shift();
-    this.actionSeq = this.actionSeq;
+    if (!action) return this.TERMINATED;
 
+    this.actionSeq = this.actionSeq;
     return action;
   }
 
   updateState(currentState, percept) {
-    // if (estado.player === estado.saida) {
-    //   estado.status = "Vitoria";
-    //   return estado;
-    // }
-    // estado.status = "Jogando";
-    // return { estado, percepcao };
     currentState.playerPos = percept.playerPos;
 
     return currentState;
@@ -156,26 +153,25 @@ class Agent {
 
   breadthFirstSearch(problem) {
     const node = new No(problem.initialState, null, null, 0);
-
-    if (problem.testGoal(node.estado)) {
-      return node;
-    }
-
     const edge = [node];
+
     const reached = new Set([
       `${problem.initialState.playerPos.x}${problem.initialState.playerPos.y}`,
     ]);
 
     while (edge.length > 0) {
       let node = edge.shift();
-      reached.add(`${node.estado.playerPos.x}${node.estado.playerPos.y}`);
+
+      if (problem.testGoal(node.estado)) {
+        return this.getActionSequence(node);
+      }
 
       for (let action of problem.actions(node?.estado)) {
         let child = this.childNode(problem, node, action);
         if (
           !reached.has(`${child.estado.playerPos.x}${child.estado.playerPos.y}`)
         ) {
-          if (problem.testGoal(child.estado)) return Array.from(reached);
+          reached.add(`${node.estado.playerPos.x}${node.estado.playerPos.y}`);
 
           edge.push(child);
         }
@@ -188,6 +184,15 @@ class Agent {
     let no = new No(problem.transitionModel(parent, action), parent, action, 1);
     return no;
   }
+
+  getActionSequence(node) {
+    const actions = [];
+    while (node.pai !== null) {
+      actions.unshift(node.acao);
+      node = node.pai;
+    }
+    return actions;
+  }
 }
 
 const environment = new Environment();
@@ -198,84 +203,86 @@ const state = new State(
 const agent = new Agent(state);
 const playerPos = new Coordinates(1, 1);
 
-let action = agent.simpleProblemSolvingAgent({
-  maze: [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 1, 0, 0, 1, 1, 0, 1],
-    [1, 1, 0, 1, 1, 0, 1, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 1, 0, 1, 1],
-    [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 1, 1],
-    [1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
-    [1, 0, 1, 0, 0, 0, 1, 0, 1, 1],
-    [1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  ],
-  playerPos,
-});
-
 function handleAction(action) {
-  let [x, y] = action;
-  x = Number(x);
-  y = Number(y);
+  let event;
+  switch (action) {
+    case "r":
+      console.log("DIREITA");
 
-  if (playerPos.x < x && playerPos.y == y) {
-    playerPos.x = x;
-    playerPos.y = y;
+      playerPos.x = playerPos.x + 1;
 
-    const event = new KeyboardEvent("keydown", {
-      key: "ArrowRight",
-      code: "ArrowRight",
-    });
-    window.dispatchEvent(event);
-  }
-  if (playerPos.x > x && playerPos.y == y) {
-    playerPos.x = x;
-    playerPos.y = y;
+      event = new KeyboardEvent("keydown", {
+        key: "ArrowRight",
+        code: "ArrowRight",
+      });
+      document.dispatchEvent(event);
 
-    const event = new KeyboardEvent("keydown", {
-      key: "ArrowLeft",
-      code: "ArrowLeft",
-    });
-    window.dispatchEvent(event);
-  }
-  if (playerPos.x == x && playerPos.y < y) {
-    playerPos.x = x;
-    playerPos.y = y;
+      break;
 
-    const event = new KeyboardEvent("keydown", {
-      key: "ArrowDown",
-      code: "ArrowDown",
-    });
-    window.dispatchEvent(event);
-  }
-  if (playerPos.x == x && playerPos.y > y) {
-    playerPos.x = x;
-    playerPos.y = y;
+    case "l":
+      console.log("ESQUERDA");
 
-    const event = new KeyboardEvent("keydown", {
-      key: "ArrowUp",
-      code: "ArrowUp",
-    });
-    window.dispatchEvent(event);
+      playerPos.x = playerPos.x - 1;
+
+      event = new KeyboardEvent("keydown", {
+        key: "ArrowLeft",
+        code: "ArrowLeft",
+      });
+      document.dispatchEvent(event);
+
+      break;
+    case "d":
+      console.log("BAIXO");
+
+      playerPos.y = playerPos.y + 1;
+
+      event = new KeyboardEvent("keydown", {
+        key: "ArrowDown",
+        code: "ArrowDown",
+      });
+      document.dispatchEvent(event);
+
+      break;
+    case "u":
+      console.log("CIMA");
+
+      playerPos.y = playerPos.y - 1;
+
+      event = new KeyboardEvent("keydown", {
+        key: "ArrowUp",
+        code: "ArrowUp",
+      });
+      document.dispatchEvent(event);
+
+      break;
   }
 }
 
-setInterval(() => {
-  let action = agent.simpleProblemSolvingAgent({
-    maze: [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 1, 0, 0, 1, 1, 0, 1],
-      [1, 1, 0, 1, 1, 0, 1, 0, 0, 1],
-      [1, 1, 0, 0, 0, 0, 1, 0, 1, 1],
-      [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
-      [1, 0, 0, 0, 0, 1, 0, 0, 1, 1],
-      [1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
-      [1, 0, 1, 0, 0, 0, 1, 0, 1, 1],
-      [1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    ],
-    playerPos,
-  });
-  if (action) handleAction(action);
-}, 5000);
+// let solution = setInterval(() => {
+//   let action = agent.simpleProblemSolvingAgent({
+//     maze: [
+//       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+//       [1, 0, 0, 1, 0, 0, 1, 1, 0, 1],
+//       [1, 1, 0, 1, 1, 0, 1, 0, 0, 1],
+//       [1, 1, 0, 0, 0, 0, 1, 0, 1, 1],
+//       [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
+//       [1, 0, 0, 0, 0, 1, 0, 0, 1, 1],
+//       [1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
+//       [1, 0, 1, 0, 0, 0, 1, 0, 1, 1],
+//       [1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+//       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+//     ],
+//     playerPos,
+//   });
+
+//   if (action == -1) {
+//     clearInterval(solution);
+//     alert("Sem solução");
+//   }
+
+//   if (action == -2) {
+//     clearInterval(solution);
+//   }
+
+//   if (action && action.length > 0) handleAction(action);
+// }, 1000);
