@@ -1,7 +1,8 @@
-import { Environment } from './Environment.js';
-import { State } from './State.js';
-import { No } from './No.js';
-import { Player } from './Player.js';
+import { Environment } from "./Environment.js";
+import { State } from "./State.js";
+import { No } from "./No.js";
+import { Player } from "./Player.js";
+import { readMaze } from "./sensor.js";
 
 class Agent {
   constructor(initialState) {
@@ -43,10 +44,18 @@ class Agent {
   formulateProblem(currentState, goal) {
     const actions = function (state) {
       let sides_player = {
-        left: state.enviroment.mazeMap[state.playerPos.y][state.playerPos.x - 1] === 0,
-        right: state.enviroment.mazeMap[state.playerPos.y][state.playerPos.x + 1] === 0,
-        top: state.enviroment.mazeMap[state.playerPos.y - 1][state.playerPos.x] === 0,
-        down: state.enviroment.mazeMap[state.playerPos.y + 1][state.playerPos.x] === 0
+        left:
+          state.enviroment.mazeMap[state.playerPos.y][state.playerPos.x - 1] ===
+          0,
+        right:
+          state.enviroment.mazeMap[state.playerPos.y][state.playerPos.x + 1] ===
+          0,
+        top:
+          state.enviroment.mazeMap[state.playerPos.y - 1][state.playerPos.x] ===
+          0,
+        down:
+          state.enviroment.mazeMap[state.playerPos.y + 1][state.playerPos.x] ===
+          0,
       };
 
       let availableDirections = [];
@@ -68,22 +77,34 @@ class Agent {
 
       switch (action) {
         case "u":
-          if (coordinates.y == 0 || maze.mazeMap[coordinates.y - 1][coordinates.x] == 1) {
+          if (
+            coordinates.y == 0 ||
+            maze.mazeMap[coordinates.y - 1][coordinates.x] == 1
+          ) {
             return node.estado;
           }
           return new State(new Player(coordinates.x, coordinates.y - 1), maze);
         case "r":
-          if (coordinates.x == maze.mazeMap[0].length - 1 || maze.mazeMap[coordinates.y][coordinates.x + 1] == 1) {
+          if (
+            coordinates.x == maze.mazeMap[0].length - 1 ||
+            maze.mazeMap[coordinates.y][coordinates.x + 1] == 1
+          ) {
             return node.estado;
           }
           return new State(new Player(coordinates.x + 1, coordinates.y), maze);
         case "d":
-          if (coordinates.y == maze.mazeMap.length - 1 || maze.mazeMap[coordinates.y + 1][coordinates.x] == 1) {
+          if (
+            coordinates.y == maze.mazeMap.length - 1 ||
+            maze.mazeMap[coordinates.y + 1][coordinates.x] == 1
+          ) {
             return node.estado;
           }
           return new State(new Player(coordinates.x, coordinates.y + 1), maze);
         case "l":
-          if (coordinates.x == 0 || maze.mazeMap[coordinates.y][coordinates.x - 1] == 1) {
+          if (
+            coordinates.x == 0 ||
+            maze.mazeMap[coordinates.y][coordinates.x - 1] == 1
+          ) {
             return node.estado;
           }
           return new State(new Player(coordinates.x - 1, coordinates.y), maze);
@@ -118,9 +139,13 @@ class Agent {
       for (let action of problem.actions(node?.estado)) {
         let child = this.childNode(problem, node, action);
         if (
-          !reached.has(`${child.estado.playerPos.x},${child.estado.playerPos.y}`)
+          !reached.has(
+            `${child.estado.playerPos.x},${child.estado.playerPos.y}`
+          )
         ) {
-          reached.add(`${child.estado.playerPos.x},${child.estado.playerPos.y}`);
+          reached.add(
+            `${child.estado.playerPos.x},${child.estado.playerPos.y}`
+          );
           edge.push(child);
         }
       }
@@ -129,7 +154,12 @@ class Agent {
   }
 
   childNode(problem, parent, action) {
-    return new No(problem.transitionModel(parent, action), parent, action, parent.custo + 1);
+    return new No(
+      problem.transitionModel(parent, action),
+      parent,
+      action,
+      parent.custo + 1
+    );
   }
 
   getActionSequence(node) {
@@ -142,7 +172,12 @@ class Agent {
   }
 }
 
-const environment = new Environment();
+const sensor = readMaze();
+const environment = new Environment(
+  sensor.maze.mazeMap,
+  sensor.maze.startPos,
+  sensor.maze.endPos
+);
 const state = new State(
   new Player(environment.startPos.x, environment.startPos.y),
   environment
@@ -157,17 +192,26 @@ function handleAction(action) {
     case "r":
       console.log("DIREITA");
       playerPos.x += 1;
-      event = new KeyboardEvent("keydown", { key: "ArrowRight", code: "ArrowRight" });
+      event = new KeyboardEvent("keydown", {
+        key: "ArrowRight",
+        code: "ArrowRight",
+      });
       break;
     case "l":
       console.log("ESQUERDA");
       playerPos.x -= 1;
-      event = new KeyboardEvent("keydown", { key: "ArrowLeft", code: "ArrowLeft" });
+      event = new KeyboardEvent("keydown", {
+        key: "ArrowLeft",
+        code: "ArrowLeft",
+      });
       break;
     case "d":
       console.log("BAIXO");
       playerPos.y += 1;
-      event = new KeyboardEvent("keydown", { key: "ArrowDown", code: "ArrowDown" });
+      event = new KeyboardEvent("keydown", {
+        key: "ArrowDown",
+        code: "ArrowDown",
+      });
       break;
     case "u":
       console.log("CIMA");
@@ -180,11 +224,12 @@ function handleAction(action) {
   document.dispatchEvent(event);
 }
 
-// Sensor
 let solution = setInterval(() => {
+  let sensor = readMaze();
+
   let action = agent.simpleProblemSolvingAgent({
-    maze: environment.mazeMap,
-    playerPos,
+    maze: sensor.maze.mazeMap,
+    playerPos: sensor.playerPos,
   });
 
   if (action == -1) {
@@ -197,4 +242,4 @@ let solution = setInterval(() => {
   }
 
   if (action && action.length > 0) handleAction(action);
-}, 1000);
+}, 300);
