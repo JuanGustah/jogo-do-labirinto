@@ -41,8 +41,8 @@ const mazeMap = [
 ];
 
 const startPosition = { x: 1, y: 1 }; // posição inicial do labirinto
-//variar o 15 e 16 no y
-const finishPosition = { x: 6, y: 16 }; // posição final do labirinto
+//variar o 15 e 17 no y
+const finishPosition = { x: 6, y: 17 }; // posição final do labirinto
 
 let playerPosition = { x: 1, y: 1 }; // posição inicial do jogador
 const player = document.createElement("div");

@@ -14,7 +14,6 @@ class Agent {
   }
 
   simpleProblemSolvingAgent(percept) {
-    console.log(this.actionSeq);
     this.currentState = this.updateState(this.currentState, percept);
     if (this.actionSeq.length === 0) {
       this.goal = this.formulateGoal(this.currentState);
@@ -29,84 +28,65 @@ class Agent {
     let action = this.actionSeq.shift();
     if (!action) return this.TERMINATED;
 
-    this.actionSeq = this.actionSeq;
     return action;
   }
 
   updateState(currentState, percept) {
     currentState.playerPos = percept.playerPos;
-
     return currentState;
   }
 
   formulateGoal(state) {
-    
-    return new Player(
-      state.enviroment.endPos.x,
-      state.enviroment.endPos.y
-    );
+    return new Player(state.enviroment.endPos.x, state.enviroment.endPos.y);
   }
 
   formulateProblem(currentState, goal) {
     const actions = function (state) {
-      return ["l", "u", "r", "d"];
+      let sides_player = {
+        left: state.enviroment.mazeMap[state.playerPos.y][state.playerPos.x - 1] === 0,
+        right: state.enviroment.mazeMap[state.playerPos.y][state.playerPos.x + 1] === 0,
+        top: state.enviroment.mazeMap[state.playerPos.y - 1][state.playerPos.x] === 0,
+        down: state.enviroment.mazeMap[state.playerPos.y + 1][state.playerPos.x] === 0
+      };
+
+      let availableDirections = [];
+      if (sides_player.left) availableDirections.push("l");
+      if (sides_player.right) availableDirections.push("r");
+      if (sides_player.top) availableDirections.push("u");
+      if (sides_player.down) availableDirections.push("d");
+
+      return availableDirections;
     };
 
-    //teste se
     let testGoal = function (state) {
       return state.playerPos.x === goal.x && state.playerPos.y === goal.y;
     };
 
-    //possibilidades de movimentação
     const transitionModel = function (node, action) {
       let coordinates = node.estado.playerPos;
       let maze = node.estado.enviroment;
 
       switch (action) {
         case "u":
-          if (
-            coordinates.y == 0 ||
-            maze.mazeMap[coordinates.y - 1][coordinates.x] == 1
-          ) {
+          if (coordinates.y == 0 || maze.mazeMap[coordinates.y - 1][coordinates.x] == 1) {
             return node.estado;
           }
-          return new State(
-            new Player(coordinates.x, coordinates.y - 1),
-            maze
-          );
+          return new State(new Player(coordinates.x, coordinates.y - 1), maze);
         case "r":
-          if (
-            coordinates.x == maze.mazeMap[0].length ||
-            maze.mazeMap[coordinates.y][coordinates.x + 1] == 1
-          ) {
+          if (coordinates.x == maze.mazeMap[0].length - 1 || maze.mazeMap[coordinates.y][coordinates.x + 1] == 1) {
             return node.estado;
           }
-          return new State(
-            new Player(coordinates.x + 1, coordinates.y),
-            maze
-          );
+          return new State(new Player(coordinates.x + 1, coordinates.y), maze);
         case "d":
-          if (
-            coordinates.y == maze.mazeMap.length ||
-            maze.mazeMap[coordinates.y + 1][coordinates.x] == 1
-          ) {
+          if (coordinates.y == maze.mazeMap.length - 1 || maze.mazeMap[coordinates.y + 1][coordinates.x] == 1) {
             return node.estado;
           }
-          return new State(
-            new Player(coordinates.x, coordinates.y + 1),
-            maze
-          );
+          return new State(new Player(coordinates.x, coordinates.y + 1), maze);
         case "l":
-          if (
-            coordinates.x == 0 ||
-            maze.mazeMap[coordinates.y][coordinates.x - 1] == 1
-          ) {
+          if (coordinates.x == 0 || maze.mazeMap[coordinates.y][coordinates.x - 1] == 1) {
             return node.estado;
           }
-          return new State(
-            new Player(coordinates.x - 1, coordinates.y),
-            maze
-          );
+          return new State(new Player(coordinates.x - 1, coordinates.y), maze);
         default:
           return node.estado;
       }
@@ -125,7 +105,7 @@ class Agent {
     const edge = [node];
 
     const reached = new Set([
-      `${problem.initialState.playerPos.x}${problem.initialState.playerPos.y}`,
+      `${problem.initialState.playerPos.x},${problem.initialState.playerPos.y}`,
     ]);
 
     while (edge.length > 0) {
@@ -138,10 +118,9 @@ class Agent {
       for (let action of problem.actions(node?.estado)) {
         let child = this.childNode(problem, node, action);
         if (
-          !reached.has(`${child.estado.playerPos.x}${child.estado.playerPos.y}`)
+          !reached.has(`${child.estado.playerPos.x},${child.estado.playerPos.y}`)
         ) {
-          reached.add(`${node.estado.playerPos.x}${node.estado.playerPos.y}`);
-
+          reached.add(`${child.estado.playerPos.x},${child.estado.playerPos.y}`);
           edge.push(child);
         }
       }
@@ -150,8 +129,7 @@ class Agent {
   }
 
   childNode(problem, parent, action) {
-    let no = new No(problem.transitionModel(parent, action), parent, action, 1);
-    return no;
+    return new No(problem.transitionModel(parent, action), parent, action, parent.custo + 1);
   }
 
   getActionSequence(node) {
@@ -172,63 +150,37 @@ const state = new State(
 const agent = new Agent(state);
 const playerPos = new Player(1, 1);
 
-//atuador
+// Atuador
 function handleAction(action) {
   let event;
   switch (action) {
     case "r":
       console.log("DIREITA");
-
-      playerPos.x = playerPos.x + 1;
-
-      event = new KeyboardEvent("keydown", {
-        key: "ArrowRight",
-        code: "ArrowRight",
-      });
-      document.dispatchEvent(event);
-
+      playerPos.x += 1;
+      event = new KeyboardEvent("keydown", { key: "ArrowRight", code: "ArrowRight" });
       break;
-
     case "l":
       console.log("ESQUERDA");
-
-      playerPos.x = playerPos.x - 1;
-
-      event = new KeyboardEvent("keydown", {
-        key: "ArrowLeft",
-        code: "ArrowLeft",
-      });
-      document.dispatchEvent(event);
-
+      playerPos.x -= 1;
+      event = new KeyboardEvent("keydown", { key: "ArrowLeft", code: "ArrowLeft" });
       break;
     case "d":
       console.log("BAIXO");
-
-      playerPos.y = playerPos.y + 1;
-
-      event = new KeyboardEvent("keydown", {
-        key: "ArrowDown",
-        code: "ArrowDown",
-      });
-      document.dispatchEvent(event);
-
+      playerPos.y += 1;
+      event = new KeyboardEvent("keydown", { key: "ArrowDown", code: "ArrowDown" });
       break;
     case "u":
       console.log("CIMA");
-
-      playerPos.y = playerPos.y - 1;
-
-      event = new KeyboardEvent("keydown", {
-        key: "ArrowUp",
-        code: "ArrowUp",
-      });
-      document.dispatchEvent(event);
-
+      playerPos.y -= 1;
+      event = new KeyboardEvent("keydown", { key: "ArrowUp", code: "ArrowUp" });
       break;
+    default:
+      return;
   }
+  document.dispatchEvent(event);
 }
 
-//sensor
+// Sensor
 let solution = setInterval(() => {
   let action = agent.simpleProblemSolvingAgent({
     maze: environment.mazeMap,
